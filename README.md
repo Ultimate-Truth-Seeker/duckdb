@@ -119,11 +119,59 @@ generar los resultados principales.
 
 ## Como levantar el ambiente
 
-<!-- TODO (Ejercicio 1.5) -->
+### Requisitos previos
+Docker con Docker Compose, Git y ~10 GB de disco libre.
+
+### Pasos
+```bash
+# 1. Fork del repositorio del docente (desde GitHub) y clonado de SU fork
+git clone https://github.com/<su-usuario>/duckdb.git
+cd duckdb
+
+# 2. Construir y levantar los servicios (la primera vez tarda varios minutos)
+docker compose up --build -d
+
+# 3. Verificar
+docker compose ps
+docker compose exec lab python -c "import duckdb; print(duckdb.__version__)"
+```
+
+| Servicio | URL | Notas |
+|---|---|---|
+| JupyterLab (`lab`) | <http://localhost:8888> | Sin token; solo accesible desde `127.0.0.1`. |
+| Metabase (`metabase`) | <http://localhost:3000> | La primera vez pide crear una cuenta local. |
+
+**Conectar Metabase a DuckDB:** Admin > Databases > Add database > DuckDB, archivo
+`/workspace/data/processed/taxi.duckdb` (existe despues de ejecutar `scripts/build_db.py`).
+Active el modo **solo lectura** de la conexion (ver la nota sobre `read_only` mas arriba).
+
+Para detener: `docker compose down` (conserva los datos y la configuracion de Metabase).
+
+Todos los comandos de Python de este README se ejecutan **dentro del contenedor**:
+`docker compose exec lab <comando>`. Mas detalles (estructura de directorios, herramientas del
+ambiente, importancia de la reproducibilidad) en [`docs/ambiente.md`](docs/ambiente.md).
 
 ## Como descargar los datos
 
-<!-- TODO (Ejercicios 2.6, 5.1 y 8.1) -->
+```bash
+# Descarga yellow y green de 2024, 2025 y 2026 en data/raw/<tipo>/<anio>/
+docker compose exec lab python scripts/download_data.py
+
+# Opciones
+docker compose exec lab python scripts/download_data.py --years 2026        # solo algunos anios
+docker compose exec lab python scripts/download_data.py --taxi green
+docker compose exec lab python scripts/download_data.py --dry-run           # sin descargar
+
+# Verificar que el conjunto esta completo e integro (escribe docs/data_inventory.csv)
+docker compose exec lab python scripts/verify_data.py
+```
+- Los archivos ya descargados **no** se vuelven a descargar: el comando puede repetirse cuando la TLC
+  publique meses nuevos.
+- Los meses que la TLC aun no publica se reportan como `NO_PUBLICADO` (no es un error).
+- Si `verify_data.py` reporta `FALTA` o `INVALIDO`, ejecute `verify_data.py --delete-invalid` y luego
+  `download_data.py` de nuevo.
+
+Cambios realizados al script original y como se verifica la completitud: [`docs/descarga.md`](docs/descarga.md).
 
 ## Como ejecutar el analisis
 
@@ -131,7 +179,18 @@ generar los resultados principales.
 
 ## Como reproducir los benchmarks
 
-<!-- TODO (Ejercicio 6) -->
+```bash
+# 1. Materializar la tabla (detenga Metabase: un .duckdb admite un solo escritor)
+docker compose stop metabase
+docker compose exec lab python scripts/build_db.py        # crea data/processed/taxi.duckdb
+docker compose start metabase
+
+# 2. Ejecutar el benchmark (consultas en sql/04_benchmark/)
+docker compose exec lab python scripts/benchmark.py
+docker compose exec lab python scripts/benchmark.py --scales 1,6,all --runs 3   # version rapida
+```
+Resultados: `docs/benchmark_results.csv` y `docs/benchmark_results.md`.
+Metodologia, consultas y limitaciones: [`docs/benchmark.md`](docs/benchmark.md).
 
 ## Como generar los resultados principales
 
