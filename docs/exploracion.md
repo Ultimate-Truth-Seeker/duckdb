@@ -20,18 +20,18 @@ Los patrones usan comodin de anio (`data/raw/yellow/*/*.parquet`), de modo que a
 
 ## 3.6 Problemas de calidad de datos
 
-Esta lista dice **que buscar y con que consulta**. Los hallazgos con cifras salen de ejecutar `p09` a `p12` sobre los datos reales y deben anotarse en la columna "Resultado" antes de entregar.
+Cifras reales sobre los 3 años (121,184,384 viajes: yellow 119,595,677 y green 1,588,707). Fuente: `p09` a `p12`, `v03` y `d02` (ver `docs/consultas_resultados.md`).
 
-| Posible problema | Se detecta con | Decision prevista |
-|---|---|---|
-| Fechas de recogida fuera del anio/mes del archivo | `p11`, `p12`, `v03` | Excluir del analisis temporal; no se borran de `trips`. |
-| Bajada anterior a la recogida, o duracion > 24 h | `p11`, `d02` | Excluir de duracion y velocidad. |
-| Distancia 0 o muy grande (> 100 millas) | `p09`, `p10`, `p11` | Filtrar en indicadores de distancia y velocidad. |
-| Tarifa o total negativos o en cero (devoluciones, disputas, viajes anulados) | `p09`, `p11` | Filtrar `fare_amount` entre 1 y 500 en promedios. |
-| `passenger_count` nulo o 0 | `p09`, `p10`, `p11` | No usar como filtro; reportar el % de nulos. |
-| Zonas de recogida fuera de 1-265 | `p11` | Excluir de los analisis por zona. |
-| Columnas que existen solo en un tipo o desde cierto anio (`cbd_congestion_fee`, `airport_fee`, `ehail_fee`, `trip_type`) | `p05`, `p07` | Tratarlas como NULL donde no existen (`taxi_common.py`). |
-| Mismo campo con tipo distinto entre archivos o con distinto nombre (`Airport_fee`/`airport_fee`, `tpep_*`/`lpep_*`) | `p06`, `p05` | `union_by_name=true`, `TRY_CAST` y mapeo de nombres. |
+| Problema | Se detecta con | Resultado (yellow / green) | Decision |
+|---|---|---|---|
+| Fechas de recogida fuera del año/mes del archivo | `p11`, `p12`, `v03` | 102 / 55 fuera del año del archivo; 68 / 20 fuera de 2024-2026 (años 2001 a 2009 y 2023); hasta 51 viajes por archivo fuera de su mes | Excluir del análisis temporal con el filtro 2024-2026; no se borran de `trips`. |
+| Bajada anterior a la recogida, o duración > 24 h | `p11`, `d02` | 3,820 / 1,351 con bajada antes de recogida; 845 / 6 con más de 24 h | Excluir de duración y velocidad (filtro 1-180 min). |
+| Distancia 0 o muy grande (> 100 millas) | `p09`, `p10`, `p11` | Distancia <= 0: 3,131,494 (2.6 %) / 71,224 (4.5 %); > 100 millas: 5,706 / 516; máximo 398,608 millas | Filtrar en indicadores de distancia y velocidad (0.1-100 millas). |
+| Tarifa o total negativos o en cero | `p09`, `p11` | Tarifa <= 0: 3,798,269 (3.2 %) / 13,015 (0.8 %); total negativo: 1,744,900 (1.5 %) / 4,971 (0.3 %); tarifa mínima -2,555 y máxima 863,372 | Filtrar `fare_amount` entre 1 y 500 en promedios. |
+| `passenger_count` nulo o 0 | `p09`, `p10`, `p11` | 24,172,589 (20.2 %) / 142,558 (9.0 %); 19.58 % de nulos en yellow, junto con `RatecodeID` y `store_and_fwd_flag` | No usar como filtro; reportar el % de nulos. |
+| Zonas de recogida fuera de 1-265 | `p11` | 0 / 0 | Sin acción; se mantiene el filtro por seguridad. |
+| Columnas que existen solo en un tipo o desde cierto año | `p05`, `p07`, `v04` | `cbd_congestion_fee` desde 2025-01 (20 de 32 archivos por tipo); `request_source` desde 2026-06 (3 archivos); `ehail_fee` 100 % nula en green | Tratarlas como NULL donde no existen (`taxi_common.py`); `request_source` no se incorpora a `trips`. |
+| Mismo campo con tipo distinto entre archivos o distinto nombre | `p06`, `p05` | 0 columnas con tipo físico distinto entre archivos; los nombres sí cambian (`tpep_*`/`lpep_*`, `Airport_fee`) | `union_by_name=true`, `TRY_CAST` y mapeo de nombres. |
 
 ## 3.9 ¿Que significa consultar directamente un archivo Parquet y por que sirve con volumenes grandes?
 

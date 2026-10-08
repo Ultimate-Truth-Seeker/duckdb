@@ -1,5 +1,6 @@
 -- Objetivo: duracion y velocidad promedio, usando solo viajes plausibles (1 min a 3 h, distancia > 0).
 -- Fuente: vista `trips` = Parquet de data/raw/{yellow,green}/*/*.parquet normalizados (scripts/taxi_common.py), o la tabla `trips` de taxi.duckdb.
+-- Decision: duracion mediana 13.6 min (yellow) y 12.6 (green). la velocidad media de green (67.7 mph) es imposible: viene de distancias absurdas, asi que hay que usar mediana o filtrar distancia <= 100.
 WITH v AS (
     SELECT taxi_type, trip_distance,
            date_diff('second', pickup_datetime, dropoff_datetime) / 60.0 AS minutos

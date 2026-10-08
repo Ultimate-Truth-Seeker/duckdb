@@ -1,5 +1,6 @@
 -- Objetivo: zonas mas activas como origen y como destino (IDs de zona de la TLC; sin tabla de nombres en el repo).
 -- Fuente: vista `trips` = Parquet de data/raw/{yellow,green}/*/*.parquet normalizados (scripts/taxi_common.py), o la tabla `trips` de taxi.duckdb.
+-- Decision: las zonas 237, 132 y 161 concentran mas recogidas (132 es JFK: 5.2 M recogidas vs 1.2 M bajadas, saldo neto +4 M). las zonas son ids sin nombre; falta la tabla de zonas para presentar nombres.
 WITH origen AS (
     SELECT pu_location_id AS zona, count(*) AS recogidas FROM trips GROUP BY zona),
 destino AS (

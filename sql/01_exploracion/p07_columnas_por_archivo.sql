@@ -1,5 +1,6 @@
 -- Objetivo: 3.3 / 3.6 columnas que NO estan presentes en todos los archivos de un tipo (esquema que evoluciona entre meses/anios).
 -- Fuente: /workspace/data/raw/*/*/*.parquet
+-- Decision: cbd_congestion_fee existe desde 2025-01 (20 de 32 archivos por tipo) y request_source solo desde 2026-06 (3 archivos). union_by_name es necesario; request_source no se incorpora a trips (no aporta al analisis).
 WITH s AS (
     SELECT regexp_extract(file_name, 'raw/([^/]+)/', 1) AS tipo, lower(name) AS columna, file_name
     FROM parquet_schema('/workspace/data/raw/*/*/*.parquet') WHERE num_children IS NULL),

@@ -39,7 +39,22 @@ instalado como plugin. Se usa Debian en lugar de la imagen oficial (Alpine) porq
 Nota de compatibilidad: la versión de `duckdb` de `requirements.txt` debe estar alineada con la del driver
 (1.5.x), porque Metabase abre el mismo archivo `.duckdb` que crea Python.
 
-<!-- COMPLETAR: pegar la salida de `docker compose exec lab pip list` si se desea documentar las versiones exactas. -->
+Versiones reales dentro del contenedor `lab` (`docker compose exec lab pip list`):
+
+| Paquete | Versión |
+|---|---|
+| Python | 3.11.14 |
+| duckdb | 1.5.5 |
+| jupyterlab | 4.6.4 |
+| ipykernel | 7.4.0 |
+| nbconvert | 7.17.1 |
+| pandas | 3.0.6 |
+| numpy | 2.4.6 |
+| pyarrow | 25.0.1 |
+| matplotlib | 3.11.2 |
+| requests | 2.34.2 |
+
+`ipykernel`, `nbconvert` y `numpy` llegan como dependencias de JupyterLab y pandas.
 
 ## 1.6 Por qué es importante un ambiente reproducible en análisis de datos
 

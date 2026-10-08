@@ -1,5 +1,6 @@
 -- Objetivo: estadisticos descriptivos de las variables numericas clave por tipo de taxi.
 -- Fuente: vista `trips` = Parquet de data/raw/{yellow,green}/*/*.parquet normalizados (scripts/taxi_common.py), o la tabla `trips` de taxi.duckdb.
+-- Decision: la media engaña: distancia media yellow 5.88 vs mediana 1.81; green 16.99 vs 1.95, por distancias absurdas (maximo 398,608). se reporta mediana y percentiles, no promedios crudos.
 SELECT taxi_type,
        count(*) AS n,
        round(avg(trip_distance), 2) AS dist_prom, round(median(trip_distance), 2) AS dist_mediana,

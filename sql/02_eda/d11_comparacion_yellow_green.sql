@@ -1,6 +1,7 @@
 -- Objetivo: diferencias entre taxis amarillos y verdes en una sola tabla (volumen, distancia, duracion, tarifa, propina, pasajeros, tarjeta).
 -- Solo viajes plausibles: distancia 0.1-100 millas, tarifa 1-500, duracion 1-180 minutos.
 -- Fuente: vista `trips` = Parquet de data/raw/{yellow,green}/*/*.parquet normalizados (scripts/taxi_common.py), o la tabla `trips` de taxi.duckdb.
+-- Decision: yellow es mas caro (tarifa 20.23 vs 17.73) y largo (3.49 vs 3.13 mi); solo yellow sale de JFK/LGA (7.2 %). se pueden analizar juntos con la columna taxi_type, pero no promediar mezclados.
 WITH v AS (
     SELECT *, date_diff('second', pickup_datetime, dropoff_datetime) / 60.0 AS minutos
     FROM trips

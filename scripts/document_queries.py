@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ejecuta las consultas de sql/01_exploracion, 02_eda y 03_validacion_anios y documenta cada una.
+"""Ejecuta las consultas de sql/01_exploracion, 02_eda, 03_validacion_anios y 05_indicadores y documenta cada una.
 
 Para cada archivo .sql escribe en el Markdown de salida lo que piden los puntos 3.8, 4.3, 5.8 y 8.7:
 la consulta SQL, su objetivo, los archivos fuente, el resultado obtenido (primeras filas), el tiempo
@@ -35,10 +35,11 @@ import duckdb
 
 import taxi_common as tc
 
-DIRS = ["01_exploracion", "02_eda", "03_validacion_anios"]
+DIRS = ["01_exploracion", "02_eda", "03_validacion_anios", "05_indicadores"]
 TITULOS = {"01_exploracion": "Exploracion con Parquet directo (Ej. 3)",
            "02_eda": "Analisis exploratorio (Ej. 4)",
-           "03_validacion_anios": "Validacion al incorporar anios (Ej. 5 y 8.3)"}
+           "03_validacion_anios": "Validacion al incorporar anios (Ej. 5 y 8.3)",
+           "05_indicadores": "Indicadores del tablero (Ej. 7 y 8)"}
 
 
 def cabecera(texto):
@@ -57,9 +58,14 @@ def cabecera(texto):
     return campos
 
 
-def celda(v):
+COLUMNAS_SIN_MILES = re.compile(r"^(anio|mes|source_)")   # años y meses no llevan coma de miles
+
+
+def celda(v, columna=""):
     if v is None:
         return ""
+    if isinstance(v, int) and not isinstance(v, bool) and COLUMNAS_SIN_MILES.match(columna):
+        return str(v)
     if isinstance(v, float):
         return f"{v:,.4g}" if abs(v) >= 1e6 or (v != 0 and abs(v) < 1e-3) else f"{v:,.2f}"
     if isinstance(v, int) and not isinstance(v, bool):
@@ -69,7 +75,7 @@ def celda(v):
 
 def tabla_md(columnas, filas):
     out = ["| " + " | ".join(columnas) + " |", "|" + "|".join("---" for _ in columnas) + "|"]
-    out += ["| " + " | ".join(celda(v) for v in f) + " |" for f in filas]
+    out += ["| " + " | ".join(celda(v, c) for v, c in zip(f, columnas)) + " |" for f in filas]
     return "\n".join(out)
 
 

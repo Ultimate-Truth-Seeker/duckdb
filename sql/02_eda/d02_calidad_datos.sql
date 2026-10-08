@@ -1,5 +1,6 @@
 -- Objetivo: cuantificar problemas de calidad (registros sospechosos) por tipo de taxi.
 -- Fuente: vista `trips` = Parquet de data/raw/{yellow,green}/*/*.parquet normalizados (scripts/taxi_common.py), o la tabla `trips` de taxi.duckdb.
+-- Decision: yellow tiene 845 viajes de mas de 24 h y 3,820 con bajada antes de la recogida; 68 fechas fuera de 2024-2026. todos se excluyen de duracion, velocidad y series temporales.
 SELECT taxi_type, count(*) AS viajes,
        count_if(dropoff_datetime < pickup_datetime)                    AS bajada_antes_de_recogida,
        count_if(dropoff_datetime - pickup_datetime > INTERVAL 24 HOUR) AS duracion_mayor_24h,

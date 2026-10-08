@@ -1,6 +1,7 @@
 -- Objetivo: detectar meses sin archivo entre el primero y el ultimo cargado, por tipo de taxi.
 -- Un mes final ausente puede ser normal (la TLC publica con atraso); un hueco intermedio no.
 -- Fuente: vista `trips` = Parquet de data/raw/{yellow,green}/*/*.parquet normalizados (scripts/taxi_common.py), o la tabla `trips` de taxi.duckdb.
+-- Decision: 0 filas: no hay huecos entre el primer y el ultimo mes de cada tipo. sep-dic 2026 no es hueco: la tlc aun no lo publica.
 WITH rango AS (
     SELECT taxi_type,
            min(mes) AS desde, max(mes) AS hasta

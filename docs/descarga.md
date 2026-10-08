@@ -54,8 +54,23 @@ Esta lógica se probó con archivos sintéticos: un archivo truncado se reporta 
 
 ### Resultado de la ejecución real
 
-<!-- COMPLETAR tras ejecutar: pegar aquí la tabla que imprime `python scripts/verify_data.py`
-     y anotar qué meses de 2026 aún no estaban publicados en la fecha de la descarga. -->
+Descarga y verificación del 2026-10-08 (`download_data.py` y luego `verify_data.py`, ambos con código de salida 0):
+
+```text
+taxi    anio    OK  FALTA  INVAL  NO_PUB  RED  AUS           filas
+green   2024    12      0      0       0    0    0         660,218
+green   2025    12      0      0       0    0    0         591,375
+green   2026     8      0      0       4    0    0         337,114
+yellow  2024    12      0      0       0    0    0      41,169,720
+yellow  2025    12      0      0       0    0    0      48,722,602
+yellow  2026     8      0      0       4    0    0      29,703,355
+
+Archivos OK: 64   Filas totales: 121,184,384   Temporales: 0
+```
+
+- La descarga bajó 64 archivos, 0 fallidos, ~2.0 GB en `data/raw/`.
+- Meses de 2026 **no publicados** por la TLC en esa fecha: septiembre a diciembre, en yellow y en green (8 archivos). Es lo esperado, no un error.
+- Las 121,184,384 filas del inventario (`docs/data_inventory.csv`) coinciden con las de la tabla `trips` construida después (`v08` devuelve 0 filas).
 
 ## 5.9 Características del diseño que permiten incorporar nuevos archivos
 

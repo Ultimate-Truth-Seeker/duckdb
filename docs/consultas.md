@@ -86,10 +86,55 @@ Carpeta `sql/04_benchmark/` | Se ejecuta desde: `scripts/benchmark.py` | Usan `t
 | `q07_escaneo_multiples_columnas.sql` | escaneo de muchas columnas numericas (peor caso para formato columnar: se leen casi todas). |
 | `q08_mediana_y_percentil.sql` | distribucion de valores. Mediana del total y percentil 95 de la distancia (agregados que requieren ordenar). |
 
+## Indicadores y tablero (Ej. 7 y 8)
+
+Carpeta `sql/05_indicadores/` | Se carga en Metabase con `scripts/metabase_setup.py` | Se documenta con `scripts/document_queries.py` (resultado, tiempo y decision de cada uno en `docs/consultas_resultados.md`) | Evidencia visual en `docs/tablero/`.
+
+### 7.1 Preguntas de analisis y su indicador
+
+| # | Pregunta | Indicador |
+|---|---|---|
+| 1 | ¿Como evoluciona la demanda mes a mes? | I1 |
+| 2 | ¿Que parte de la demanda corresponde a yellow y a green? | I1, I2 |
+| 3 | ¿Cuanto dinero generan los viajes cada mes? | I2 |
+| 4 | ¿A que horas se concentra la demanda? | I3 |
+| 5 | ¿Que dias de la semana hay mas y menos viajes? | I3 |
+| 6 | ¿Como pagan los pasajeros? | I4 |
+| 7 | ¿Cuanta propina se deja segun la forma de pago? | I4 |
+| 8 | ¿Que zonas concentran mas recogidas? | I5 |
+| 9 | ¿Como es un viaje tipico y cambia de un anio a otro? | I6 |
+| 10 | ¿Crece o cae la demanda frente al mismo mes del anio anterior? | I7 |
+| 11 | ¿Que proporcion de los registros es inconsistente? | I8 |
+
+### 7.2 a 7.7 Indicadores, consulta, visualizacion y justificacion
+
+La pregunta, la justificacion y la visualizacion de cada indicador estan en el `-- Objetivo:` de su `.sql`; la interpretacion, en su `-- Decision:`.
+
+| Indicador | Archivo | Visualizacion |
+|---|---|---|
+| I1 Viajes por mes y tipo | `i01_viajes_por_mes_y_tipo.sql` | Lineas, green en eje derecho |
+| I2 Ingresos por mes | `i02_ingresos_por_mes_y_tipo.sql` | Barras apiladas |
+| I3 Demanda por hora y dia | `i03_demanda_por_dia_y_hora.sql` | Lineas por dia de la semana |
+| I4 Forma de pago y propina | `i04_pago_y_propina.sql` | Barras (% de viajes) |
+| I5 Top 10 zonas de recogida | `i05_top_zonas_recogida.sql` | Barras horizontales |
+| I6 Viaje tipico por anio | `i06_viaje_tipico_por_anio.sql` | Tabla de medianas |
+| I7 Variacion interanual | `i07_variacion_interanual.sql` | Barras de variacion % |
+| I8 Calidad de datos | `i08_calidad_por_anio_y_tipo.sql` | Barras por anio y tipo |
+
+### 7.8 Principales hallazgos del tablero
+
+- **Yellow domina:** ~99 % del ingreso (1,162 M, 1,334 M y 898 M de USD en 2024, 2025 y 2026 hasta agosto) frente a 16.0 M, 14.9 M y 8.6 M de green (`i02`).
+- **Horario:** pico a las 18 h (8.64 M viajes); el jueves es el dia con mas viajes y el lunes el de menos (`i03`).
+- **Pago:** ~69 % de los viajes paga con tarjeta y solo ahi hay propina registrada (4.33 en yellow, 3.66 en green) (`i04`).
+- **Tendencia:** green cae todos los meses frente al mismo mes del anio anterior; yellow sube hasta 26.7 % en 2025 y baja hasta 11.2 % en 2026 (`i07`).
+- **Calidad:** yellow 2025 tiene 9.58 % de registros inconsistentes contra 3.71 % en 2024, por tarifas negativas (`i08`).
+- Limitacion: las zonas se muestran por id (no hay tabla de nombres) y 2026 llega solo hasta agosto.
+
 ## Documentos asociados
 
 - `docs/exploracion.md`: Ej. 3 (3.6 calidad de datos y 3.9).
 - `docs/eda.md`: Ej. 4 (preguntas 4.1 y hallazgos 4.5).
-- `docs/validacion_anios.md`: 5.6 a 5.8 y 8.3.
+- `docs/validacion_anios.md`: 5.6 a 5.8 y 8.3 a 8.7.
 - `docs/benchmark_analisis.md`: 6.9 y 6.10.
-- `docs/discusion_B.md`: borrador de 9.1 a 9.4.
+- `docs/discusion_B.md`: 9.1 a 9.8.
+- `docs/tablero/`: capturas del dashboard y de cada indicador.

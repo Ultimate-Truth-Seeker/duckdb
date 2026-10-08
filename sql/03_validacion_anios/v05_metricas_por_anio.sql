@@ -1,5 +1,6 @@
 -- Objetivo: comparar metricas clave entre anios para detectar cambios bruscos o inconsistencias (solo viajes plausibles).
 -- Fuente: vista `trips` = Parquet de data/raw/{yellow,green}/*/*.parquet normalizados (scripts/taxi_common.py), o la tabla `trips` de taxi.duckdb.
+-- Decision: metricas estables entre anios (distancia ~3.4-3.5, tarifa ~20 en yellow). 2026 tiene menos viajes por estar incompleto, no por una caida real.
 SELECT source_year AS anio, taxi_type,
        count(*) AS viajes,
        round(avg(trip_distance), 2) AS dist_prom,

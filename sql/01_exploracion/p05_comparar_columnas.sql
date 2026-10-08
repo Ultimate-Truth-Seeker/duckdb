@@ -1,5 +1,6 @@
 -- Objetivo: 3.3 comparar las columnas de yellow y green (cuales son comunes, cuales exclusivas y si cambia el tipo).
 -- Fuente: /workspace/data/raw/yellow/*/*.parquet y /workspace/data/raw/green/*/*.parquet
+-- Decision: 25 columnas entre ambos tipos: las que difieren son fechas (tpep/lpep) y las exclusivas de cada uno. se unifican con COALESCE y las ausentes quedan en NULL.
 WITH y AS (SELECT lower(column_name) AS col, column_name AS nombre_yellow, column_type AS tipo_yellow
            FROM (DESCRIBE SELECT * FROM read_parquet('/workspace/data/raw/yellow/*/*.parquet', union_by_name = true))),
      g AS (SELECT lower(column_name) AS col, column_name AS nombre_green, column_type AS tipo_green

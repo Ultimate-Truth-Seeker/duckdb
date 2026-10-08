@@ -1,5 +1,6 @@
 -- Objetivo: 3.6 cuantificar registros problematicos por tipo de taxi (fechas, duraciones, distancias, tarifas, pasajeros, zonas).
 -- Fuente: /workspace/data/raw/yellow/*/*.parquet y /workspace/data/raw/green/*/*.parquet
+-- Decision: yellow: 3.8 M tarifas <= 0, 3.1 M distancias <= 0, 1.7 M totales negativos, 24 M pasajeros nulo/0 (20 %). se filtra en cada consulta (distancia 0.1-100, tarifa 1-500, duracion 1-180 min); trips queda sin corregir.
 WITH v AS (
     SELECT 'yellow' AS tipo, tpep_pickup_datetime AS recogida, tpep_dropoff_datetime AS bajada, passenger_count,
            trip_distance, fare_amount, total_amount, PULocationID, filename

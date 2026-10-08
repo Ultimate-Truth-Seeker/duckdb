@@ -48,8 +48,4 @@ docker compose exec lab python scripts/benchmark.py --scales 1,6,all --runs 3   
 
 ## Análisis (6.9) y escenarios de uso (6.10)
 
-<!-- COMPLETAR tras ejecutar el benchmark real:
-     - Describir cómo cambia la razón Parquet/Tabla al crecer la cantidad de datos.
-     - Explicar las diferencias por consulta (columnar, pruning, metadatos, compresión, costo de construcción de la tabla).
-     - Discutir cuándo conviene consultar Parquet directo (datos que cambian, exploración puntual, un solo uso, sin espacio extra)
-       y cuándo materializar (consultas repetidas, tablero, muchos usuarios, esquema normalizado y estable). -->
+El análisis con las cifras reales de la corrida (razones por escala, costo de materializar, equilibrio y recomendación) está en [`benchmark_analisis.md`](benchmark_analisis.md); las tablas completas, en `benchmark_results.md` y `benchmark_results.csv`.

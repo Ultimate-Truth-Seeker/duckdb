@@ -1,5 +1,6 @@
 -- Objetivo: valores atipicos de tarifa con el criterio del rango intercuartil (IQR), por tipo de taxi.
 -- Fuente: vista `trips` = Parquet de data/raw/{yellow,green}/*/*.parquet normalizados (scripts/taxi_common.py), o la tabla `trips` de taxi.duckdb.
+-- Decision: por IQR ~8 % de las tarifas son atipicas altas (yellow limite 45.63, 9.45 M viajes). es demasiado porcentaje para eliminarlos: son viajes largos legitimos, asi que se usa el filtro fijo 1-500 y no el IQR.
 WITH lim AS (
     SELECT taxi_type,
            quantile_cont(fare_amount, 0.25) AS q1,
